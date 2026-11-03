@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#173f5f"><meta name="apple-mobile-web-app-capable" content="yes">
+<title>병해충·생물·농약 정보 검색</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f7fa;color:#172033;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding-bottom:90px}
+header{background:#173f5f;color:#fff;padding:20px;text-align:center}header h1{margin:0;font-size:24px}main{max-width:760px;margin:auto;padding:16px}
+.box{background:#fff;border:1px solid #dce3eb;border-radius:18px;padding:18px;margin-bottom:14px}.box h2{margin:0 0 8px}.box p{color:#667085;line-height:1.55}
+.search{display:flex;gap:8px;margin:12px 0}.search input{flex:1;padding:12px;border:1px solid #cfd7e2;border-radius:10px;font-size:16px}
+.btn{display:inline-block;border:0;border-radius:10px;padding:11px 15px;background:#173f5f;color:#fff;font-weight:800;text-decoration:none;cursor:pointer}
+.links{display:grid;gap:10px}.link{display:block;padding:15px;border:1px solid #dce3eb;border-radius:14px;text-decoration:none;color:#172033;background:#fafbfd}.link b{display:block;margin-bottom:4px}.link span{font-size:13px;color:#667085}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:10;background:rgba(255,255,255,.97);border-top:1px solid #d8dee8;display:flex;gap:3px;padding:7px 5px calc(7px + env(safe-area-inset-bottom));box-shadow:0 -3px 14px rgba(0,0,0,.08)}
+nav a{flex:1;text-decoration:none;text-align:center;color:#344054;background:#f5f7fa;border-radius:10px;padding:7px 2px;font-size:10px;font-weight:700;line-height:1.25}nav a.active{background:#173f5f;color:#fff}.note{font-size:12px;color:#667085;line-height:1.5}
+</style></head>
+<body>
+<header><h1>🔎 병해충·생물·농약 정보 검색</h1></header>
+<main>
+<div class="box">
+<h2>🍂 수목 병해 데이터베이스</h2>
+<p>병명·병원체 학명·기주식물로 찾습니다. 서식 작성 중에는 병명이 적힌 칸을 <b>우클릭</b>(PC)하거나 <b>길게 탭</b>(휴대폰)하면 병해·해충 정보를 함께 찾아 줍니다.</p>
+<div class="search"><input id="dq" placeholder="예: 소나무재선충병, 흰가루병, 향나무, Cronartium, 기출"><button class="btn" id="dqBtn">병해 DB 검색</button></div>
+<div id="dqRes" class="links"></div>
+<p id="dqSrc" style="font-size:12px;color:#667085;margin:8px 0 0"></p>
+</div>
+<div class="box">
+<h2>🐛 수목 해충 데이터베이스</h2>
+<p>해충명·학명·기주식물로 찾습니다. 서식 작성 중에는 해충명이 적힌 칸을 <b>우클릭</b>(PC)하거나 <b>길게 탭</b>(휴대폰)해도 바로 찾을 수 있습니다.</p>
+<div class="search"><input id="iq" placeholder="예: 솔잎혹파리, 소나무, Ips"><button class="btn" id="iqBtn">해충 DB 검색</button></div>
+<div id="iqRes" class="links"></div>
+<p id="iqSrc" style="font-size:12px;color:#667085;margin:8px 0 0"></p>
+</div>
+<div class="box">
+<h2>🌿 국가생물종지식정보시스템</h2>
+<p>국립수목원 국가생물종지식정보시스템에서 식물·곤충·버섯·지의류 등 생물정보를 검색합니다. 사진에서 보신 사이트를 <b>생물검색의 기본 사이트</b>로 설정했습니다.</p>
+<div class="search"><input id="q" placeholder="검색어를 입력하세요"><button class="btn" id="searchSpecies">국가생물종 검색</button></div>
+</div>
+<div class="box"><h2>국가생물종지식정보시스템 바로가기</h2><div class="links">
+<a class="link" href="https://www.nature.go.kr/" target="_blank" rel="noopener"><b>🌿 국가생물종지식정보시스템 — 통합</b><span>식물자원 · 곤충자원 · 버섯·지의류자원 · 야생조수류자원 · 생물정보관</span></a>
+<a class="link" href="https://www.nature.go.kr/ekbi/plant/pilbk/selectPlantPilbkScnmIndexList.do" target="_blank" rel="noopener"><b>🌱 식물 — 국명·학명 검색</b><span>국가생물종지식정보시스템 식물자원 검색</span></a>
+<a class="link" href="https://www.nature.go.kr/kbi/insct/pilbk/selectInsctPilbkScnmIndexList.do" target="_blank" rel="noopener"><b>🐞 곤충 — 국명·학명 검색</b><span>국가생물종지식정보시스템 곤충자원 검색</span></a>
+<a class="link" href="https://www.nature.go.kr/" target="_blank" rel="noopener"><b>🍄 버섯·지의류 — 국가생물종지식정보시스템</b><span>통합 사이트에서 버섯·지의류자원 메뉴 선택</span></a>
+</div></div>
+<div class="box"><h2>🌐 국가 생물다양성 정보</h2><div class="links">
+<a class="link" href="https://www.kbr.go.kr/" target="_blank" rel="noopener"><b>국가생물다양성 정보공유체계</b><span>국가 생물종·생물자원 통합 DB 및 생물다양성 정보</span></a>
+</div></div>
+<div class="box"><h2>🧪 농약·병해충 정보</h2><div class="links">
+<a class="link" href="https://www.nongsaro.go.kr/portal/ps/psa/psab/psaba/openApiAgchmRegistInfoLst.ps?menuId=PS03704" target="_blank" rel="noopener"><b>농약안전정보시스템 · 농약 검색</b><span>농약명·작물명·병해충명에 따른 농약 안전사용기준 확인</span></a>
+<a class="link" href="https://www.nongsaro.go.kr/portal/ps/psx/psxk/fixFarmTchSch.ps?menuId=PS04315more" target="_blank" rel="noopener"><b>농약안전정보시스템 · 병해충방제정보</b><span>병해충·농약·작목 정보를 함께 검색</span></a>
+</div></div>
+<div class="box note">※ 생물정보는 공식 사이트의 최신 자료를 확인하세요. 농약은 제품 라벨과 공식 안전사용기준을 함께 확인해야 합니다.</div>
+</main>
+<nav><a href="index.html">🏠<br>홈</a><a href="diagnosis/index.html">🩺<br>진단서</a><a href="prescription/index.html">💊<br>처방전</a><a href="jinryobu/index.html">📋<br>진료부</a><a href="survey/index.html">🌳<br>기초조사</a><a href="profile.html">👤<br>기본정보</a><a href="manager.html">📁<br>자료관리</a><a href="opinion/index.html">📝<br>소견서</a><a class="active" href="resources.html">🔎<br>생물정보</a></nav>
+<script>
+const NATURE='https://www.nature.go.kr/';
+const NATURE_SEARCH='https://www.nature.go.kr/ekbi/plant/pilbk/selectPlantPilbkScnmIndexList.do';
+function openNature(){const q=document.getElementById('q').value.trim(); const u=new URL(q?NATURE_SEARCH:NATURE); if(q)u.searchParams.set('searchWrd',q); window.open(u.toString(),'_blank','noopener');}
+document.getElementById('searchSpecies').onclick=openNature;
+document.getElementById('q').addEventListener('keydown',e=>{if(e.key==='Enter')openNature()});
+</script>
+<script src="supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="sync.js"></script>
+<script src="bio-search.js"></script>
+<script>
+(function(){
+ const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function setup(id,API,label,sub){
+  const q=document.getElementById(id),res=document.getElementById(id+'Res'),src=document.getElementById(id+'Src');
+  async function run(){
+   const t=q.value.trim();if(!t){res.innerHTML='';return}
+   res.innerHTML='<div class="note">찾는 중…</div>';
+   const list=await API.search(t);src.textContent='자료: '+API.source();
+   if(!list.length){res.innerHTML='<div class="note">“'+esc(t)+'”와 일치하는 '+label+'가 없습니다.</div>';return}
+   res.innerHTML='';
+   list.slice(0,60).forEach(it=>{const a=document.createElement('a');a.className='link';a.href='#';a.innerHTML='<b>'+esc(it.title)+'</b><span>'+esc(sub(it).filter(Boolean).join(' · '))+'</span>';a.onclick=e=>{e.preventDefault();API.open(it,t)};res.appendChild(a)});
+   if(list.length>60)res.insertAdjacentHTML('beforeend','<div class="note">외 '+(list.length-60)+'건 — 검색어를 더 구체적으로 입력하세요.</div>');
+  }
+  document.getElementById(id+'Btn').onclick=run;q.addEventListener('keydown',e=>{if(e.key==='Enter')run()});
+ }
+ setup('dq',TreeDiseases,'병해',it=>[it.r.exam?'📝 '+it.r.exam:'',it.r.category,it.r.pathogen_class,it.r.host,it.sci]);
+ setup('iq',TreeInsects,'해충',it=>[it.r.category,it.r.order_name,it.r.family,it.sci]);
+})();
+</script>
+</body></html>

@@ -1,63 +1,28 @@
-const CACHE = "ngs-v3";
-const SHELL = [
-  "./",
-  "index.html",
-  "manifest.webmanifest",
-  "icons/icon-192.png",
-  "icons/icon-512.png",
-  "icons/apple-touch-icon.png"
+const CACHE='tree-diagnosis-integrated-v14';
+const ASSETS=[
+ './','./index.html','./profile.html','./manager.html','./manifest.webmanifest',
+ './diagnosis/','./diagnosis/index.html','./prescription/','./prescription/index.html',
+ './jinryobu/','./jinryobu/index.html','./survey/','./survey/index.html','./opinion/','./opinion/index.html',
+ './docstore.js','./sync.js','./supabase-config.js','./bio-search.js','./resources.html','./data/insects.json','./data/diseases.json',
+ './icons/icon-192.png','./icons/icon-512.png','./icons/icon-maskable-512.png','./icons/apple-touch-icon.png'
 ];
-
-self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE)
-      .then(cache => cache.addAll(SHELL))
-      .then(() => self.skipWaiting())
-  );
-});
-
-self.addEventListener("activate", event => {
-  event.waitUntil((async () => {
-    const keys = await caches.keys();
-    await Promise.all(
-      keys.filter(key => key.startsWith("ngs-") && key !== CACHE)
-        .map(key => caches.delete(key))
-    );
-    await self.clients.claim();
-  })());
-});
-
-self.addEventListener("fetch", event => {
-  const request = event.request;
-  const url = new URL(request.url);
-
-  if (request.method !== "GET" || url.origin !== self.location.origin ||
-      url.pathname.startsWith("/api/")) {
-    return;
-  }
-
-  event.respondWith((async () => {
-    try {
-      const response = await fetch(request);
-      if (response && response.ok) {
-        const cache = await caches.open(CACHE);
-        cache.put(request, response.clone()).catch(() => {});
-      }
-      return response;
-    } catch (error) {
-      const cached = await caches.match(request);
-      if (cached) return cached;
-
-      // Only HTML page navigation should fall back to the app shell.
-      if (request.mode === "navigate") {
-        const shell = await caches.match("index.html");
-        if (shell) return shell;
-      }
-
-      return new Response("오프라인 상태입니다. 인터넷 연결 후 다시 시도해 주세요.", {
-        status: 503,
-        headers: { "Content-Type": "text/plain; charset=utf-8" }
-      });
-    }
-  })());
+// 하나라도 실패해도 설치가 중단되지 않도록 개별 저장
+self.addEventListener('install',e=>e.waitUntil(
+ caches.open(CACHE).then(c=>Promise.all(ASSETS.map(u=>c.add(u).catch(()=>{})))).then(()=>self.skipWaiting())
+));
+self.addEventListener('activate',e=>e.waitUntil(
+ caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())
+));
+self.addEventListener('fetch',e=>{
+ const req=e.request;
+ if(req.method!=='GET')return;
+ const url=new URL(req.url);
+ if(url.origin!==location.origin)return;              // CDN 등 외부 요청은 건드리지 않음
+ // 같은 경로의 서브앱(진료부·기초조사표)은 각자의 서비스워커가 처리
+ if(/\/(jinryobu|survey)\/sw\.js$/.test(url.pathname))return;
+ // 네트워크 우선 → 실패 시 캐시 (최신 화면 유지 + 오프라인 지원)
+ e.respondWith(fetch(req).then(r=>{
+   if(r&&r.ok){const copy=r.clone();caches.open(CACHE).then(c=>c.put(req,copy));}
+   return r;
+ }).catch(()=>caches.match(req).then(c=>c||(req.mode==='navigate'?caches.match('./index.html'):Response.error()))));
 });
